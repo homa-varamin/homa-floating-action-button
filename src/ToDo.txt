@@ -1,0 +1,13 @@
+add cross icon for closing.
+add three animantion on close:
+fade + move + scale.
+
+@keyframes scaleAnimation {
+  from { transform: scale(1); }  /* Start at original size */
+  to { transform: scale(2); }    /* End at double the size */
+}
+
+div {
+  /* Base styles (optional) */
+  animation: scaleAnimation 2s ease-in-out infinite alternate;  /* Animation properties */
+}

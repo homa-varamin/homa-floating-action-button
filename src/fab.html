@@ -1,0 +1,283 @@
+<html>
+
+<head>
+    <style>
+        @font-face {
+            font-family: "iransans";
+            src: url("./IRANSansWebFaNum-Medium.ttf") format("truetype");
+            font-weight: 500;
+            font-style: normal;
+        }
+
+        .iransans {
+            font-family: "iransans";
+        }
+
+        .perfect-center {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .saf-fab-tooltip {
+            background-color: #585858;
+            box-shadow: 0px 0px 3px #323232;
+            color: white;
+            position: absolute;
+            top: -20px;
+            padding: 0px 7px;
+            font-size: 10px;
+            border-radius: 2px;
+            display: none;
+        }
+
+        .saf-fab-icon-container {
+            position: relative;
+            box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.2);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-family: "iransans";
+        }
+
+        .saf-temp-show {
+            display: block !important;
+        }
+    </style>
+
+    <script>
+        function safTooltip(mouseMoveEvent, targetElement, tooltip) {
+            if (targetElement.hasEvent) {
+                return;
+            }
+
+            function showToolTip() {
+                tooltipElement.classList.add('saf-temp-show');
+            }
+
+            function getTooltipElement() {
+                if (!targetElement.hasTooltipElement) {
+                    const tooltipDiv = document.createElement("div");
+                    tooltipDiv.classList.add('saf-fab-tooltip');
+                    tooltipDiv.innerText = tooltip;
+                    targetElement.prepend(tooltipDiv);
+                    targetElement.hasTooltipElement = true;
+                    return tooltipDiv;
+                }
+                else {
+                    return targetElement.querySelector('.saf-fab-tooltip');
+                }
+            }
+
+            function isMouseOverElement(divElement, event) {
+                const rect = divElement.getBoundingClientRect();
+                const mouseX = event.clientX;
+                const mouseY = event.clientY;
+                return (mouseX >= rect.left && mouseX < rect.right &&
+                    mouseY >= rect.top && mouseY < rect.bottom);
+            }
+
+            var globalMouseMoveListener = function (event) {
+                if (!isMouseOverElement(targetElement, event)) {
+                    tooltipElement.classList.remove('saf-temp-show');
+                    targetElement.hasEvent = false;
+                    removeListener();
+                }
+            };
+
+            function removeListener() {
+                document.body.removeEventListener("mousemove", globalMouseMoveListener);
+            }
+
+            function addEvent() {
+                document.body.addEventListener("mousemove", globalMouseMoveListener);
+                targetElement.hasEvent = true;
+            }
+
+
+
+            var tooltipElement = getTooltipElement();
+            showToolTip();
+            addEvent();
+        }
+    </script>
+
+    <script>
+        const list = [{
+
+        }];
+
+        function safFloatingActionButton(list) {
+
+            function getContainer() {
+                var container = document.createElement("div");
+                container.dir = 'rtl';
+                container.style.display = 'flex';
+                container.style.gap = '0.25rem';
+
+                const buttons = list.map(item => getButton(item));
+
+                buttons.forEach(button => {
+                    container.appendChild(button);
+                });
+
+                container.firstChild.addEventListener('click', (event) => {
+                    const keyframes = [
+                        { transform: 'scale(1)' },
+                        { transform: 'scale(0)' }
+                    ];
+
+                    const options = {
+                        duration: 200,
+                        easing: 'ease-out',
+                        fill: 'forwards',
+                        delay: 0
+                    };
+
+                    const animationPromises = [];
+
+                    buttons.forEach((button, index, array) => {
+                        if (index === 0) {
+                            return;
+                        }
+
+                        const promise = new Promise(resolve => {
+                            setTimeout(() => {
+                                button.animate(keyframes, options);
+                                resolve();
+                            }, (array.length - 1 - index) * 50);
+                        });
+
+                        animationPromises.push(promise);
+                    });
+
+                    Promise.all(animationPromises).then(() => {
+                        console.log("All animations started simultaneously.");
+                    });
+                });
+
+                return container;
+
+            }
+
+            function getButton(item) {
+                var image = document.createElement("img");
+                image.src = item.iconUrl;
+                image.style.width = '12px';
+                image.style.height = '12px';
+
+                var icon = document.createElement("i");
+                icon.appendChild(image);
+
+                var anchor = document.createElement("a");
+                anchor.appendChild(icon);
+
+                var div = document.createElement("div");
+                div.dir = 'rtl';
+                div.classList.add('saf-fab-icon-container');
+                div.style.backgroundColor = item.backgroundColor;
+                div.addEventListener('mousemove', (event) => {
+                    safTooltip(event, div, item.tootip);
+                });
+                div.appendChild(anchor);
+
+                return div;
+            }
+            var container = getContainer();
+            return container;
+        }
+
+    </script>
+
+    <script>
+
+        document.addEventListener('DOMContentLoaded', function () {
+            var list = [{
+                tootip: 'تولتیپ',
+                backgroundColor: '#0097a7',
+                iconUrl: './icons/mouse-square.svg'
+            },
+            {
+                tootip: 'تولتیپ',
+                backgroundColor: '#4caf50',
+                iconUrl: './icons/plus.svg'
+            },
+            {
+                tootip: 'تولتیپ',
+                backgroundColor: '#2196f3',
+                iconUrl: './icons/info.svg'
+            },
+            {
+                tootip: 'تولتیپ',
+                backgroundColor: '#fbc02d',
+                iconUrl: './icons/edit.svg'
+            }, {
+                tootip: 'تولتیپ',
+                backgroundColor: '#E53935',
+                iconUrl: './icons/trash.svg'
+            },
+            {
+                tootip: 'تولتیپ',
+                backgroundColor: '#607d8b',
+                iconUrl: './icons/book.svg'
+            }]
+            var buttons = safFloatingActionButton(list);
+            document.body.appendChild(buttons);
+        });
+    </script>
+
+
+</head>
+
+<body translate="no" style="display: flex; width: 100vw;height: 100vh;gap: 2rem;flex-direction: column;" class="perfect-center">
+    <div dir="rtl" style="display: flex;gap: 0.25rem;">
+        <div class="saf-fab-icon-container" style="background-color: #0097a7;" onmousemove="safTooltip(event,this,'تولتیپ')">
+            <a>
+                <i>
+                    <img src="./icons/mouse-square.svg" style="width: 12px;height: 12px;">
+                </i>
+            </a>
+        </div>
+        <div class="saf-fab-icon-container" style="background-color: #4caf50;" onmousemove="safTooltip(event,this,'تولتیپ')">
+            <a class="perfect-center">
+                <i>
+                    <img src="./icons/plus.svg" style="width: 12px;height: 12px;">
+                </i>
+            </a>
+        </div>
+        <div class="saf-fab-icon-container" style="background-color: #2196f3;" onmousemove="safTooltip(event,this,'تولتیپ')">
+            <a>
+                <i>
+                    <img src="./icons/info.svg" style="width: 12px;height: 12px;">
+                </i>
+            </a>
+        </div>
+        <div class="saf-fab-icon-container" style="background-color: #fbc02d;" onmousemove="safTooltip(event,this,'تولتیپ')">
+            <a>
+                <i>
+                    <img src="./icons/edit.svg" style="width: 12px;height: 12px;">
+                </i>
+            </a>
+        </div>
+        <div class="saf-fab-icon-container" style="background-color: #E53935;" onmousemove="safTooltip(event,this,'تولتیپ')">
+            <a>
+                <i>
+                    <img src="./icons/trash.svg" style="width: 12px;height: 12px;">
+                </i>
+            </a>
+        </div>
+        <div class="saf-fab-icon-container" style="background-color: #607d8b;" onmousemove="safTooltip(event,this,'تولتیپ')">
+            <a>
+                <i>
+                    <img src="./icons/book.svg" style="width: 12px;height: 12px;">
+                </i>
+            </a>
+        </div>
+    </div>
+</body>
+
+</html>
